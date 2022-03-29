@@ -108,8 +108,8 @@ const completarFooter = () => {
     const fragment = document.createDocumentFragment()
 
     // sumar cantidad y sumar totales
-    const nCantidad = Object.values(compra).reduce((acc, { cantidad }) => acc + cantidad, 0)
-    const nPrecio = Object.values(compra).reduce((acc, {cantidad, precio}) => acc + cantidad * precio ,0)
+    const nCantidad = Object.values(compra).reduce((acumulador, { cantidad }) => acumulador + cantidad, 0)
+    const nPrecio = Object.values(compra).reduce((acumulador, {cantidad, precio}) => acumulador + cantidad * precio ,0)
     // console.log(nPrecio)
 
     template.querySelectorAll('td')[0].textContent = nCantidad
@@ -121,7 +121,7 @@ const completarFooter = () => {
     footer.appendChild(fragment)
 
 
-    const boton = document.querySelector('#vaciar-carrito')
+    const boton = document.querySelector('#vaciar')
     boton.addEventListener('click', () => {
         compra = {}
         completarInfoCompra()
@@ -149,7 +149,7 @@ const accionBotones = () => {
 
             const producto = compra[btn.dataset.id]
             producto.cantidad ++
-            carrito[btn.dataset.id] = { ...producto }
+            compra[btn.dataset.id] = { ...producto }
             completarInfoCompra()
         })
     })
