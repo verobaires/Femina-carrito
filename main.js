@@ -99,7 +99,7 @@ const completarFooter = () => {
 
     if (Object.keys(compra).length === 0) {
         footer.innerHTML = `
-        <th scope="row" colspan="5"> Vaciamos la lista !!</th>
+        <th scope="row" colspan="5"> Vaciamos la lista</th>
         `
         return
     }
@@ -123,7 +123,7 @@ const completarFooter = () => {
 
     const boton = document.querySelector('#vaciar-carrito')
     boton.addEventListener('click', () => {
-        carrito = {}
+        compra = {}
         completarInfoCompra()
     })
 
