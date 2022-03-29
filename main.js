@@ -11,7 +11,7 @@ if (localStorage.getItem('carrito')){
 
 const cargarBaseDatos = async () => {
     try {
-        const res = await fetch('api.json')
+        const res = await fetch('baseDatos.json')
         const data = await res.json()
         console.log(data)
         pintarProductos(data)
