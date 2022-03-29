@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     cargarBaseDatos() //creo una funcion para cargar 
 if (localStorage.getItem('carrito')){
-    carrito = JSON.parse(localStorage.getItem('carrito'))
+    compra = JSON.parse(localStorage.getItem('carrito'))
     completarCarrito()
 }
 
@@ -38,7 +38,7 @@ const completarProductos = (data) => {
     contendorProductos.appendChild(fragment)
 }
 
-let carrito = {}
+let compra = {}
 
 const detectarBotones = (data) => {
     const botones = document.querySelectorAll('.card button')
@@ -49,10 +49,10 @@ const detectarBotones = (data) => {
             const producto = data.find(item => item.id === parseInt(btn.dataset.id))
             producto.cantidad = 1
 
-            if (carrito.hasOwnProperty(producto.id)) {
-                producto.cantidad = carrito[producto.id].cantidad + 1
+            if (compra.hasOwnProperty(producto.id)) {
+                producto.cantidad = compra[producto.id].cantidad + 1
             }
-            carrito[producto.id] = { ...producto }
+            compra[producto.id] = { ...producto }
           
             completarCarrito()
         })
@@ -69,7 +69,7 @@ const completarCarrito = () => {
     const template = document.querySelector('#template-carrito').content
     const fragment = document.createDocumentFragment()
 
-    Object.values(carrito).forEach(producto => {
+    Object.values(compra).forEach(producto => {
        
         template.querySelector('th').textContent = producto.id
         template.querySelectorAll('td')[0].textContent = producto.title
@@ -89,7 +89,7 @@ const completarCarrito = () => {
     pintarFooter()
     accionBotones()
 
-    localStorage.setItem('carrito', JSON.stringify(carrito))
+    localStorage.setItem('carrito', JSON.stringify(compra))
 
 }
 
@@ -98,7 +98,7 @@ const pintarFooter = () => {
 
     footer.innerHTML = ''
 
-    if (Object.keys(carrito).length === 0) {
+    if (Object.keys(compra).length === 0) {
         footer.innerHTML = `
         <th scope="row" colspan="5"> Carrito de compra limpio</th>
         `
@@ -109,8 +109,8 @@ const pintarFooter = () => {
     const fragment = document.createDocumentFragment()
 
     // sumar cantidad y sumar totales
-    const nCantidad = Object.values(carrito).reduce((acc, { cantidad }) => acc + cantidad, 0)
-    const nPrecio = Object.values(carrito).reduce((acc, {cantidad, precio}) => acc + cantidad * precio ,0)
+    const nCantidad = Object.values(compra).reduce((acc, { cantidad }) => acc + cantidad, 0)
+    const nPrecio = Object.values(compra).reduce((acc, {cantidad, precio}) => acc + cantidad * precio ,0)
 
 
     template.querySelectorAll('td')[0].textContent = nCantidad
@@ -124,7 +124,7 @@ const pintarFooter = () => {
 
     const boton = document.querySelector('#vaciar-carrito')
     boton.addEventListener('click', () => {
-        carrito = {}
+        compra = {}
         completarCarrito()
     })
 
@@ -148,9 +148,9 @@ const accionBotones = () => {
               })
 
 
-            const producto = carrito[btn.dataset.id]
+            const producto = compra[btn.dataset.id]
             producto.cantidad ++
-            carrito[btn.dataset.id] = { ...producto }
+            compra[btn.dataset.id] = { ...producto }
             completarCarrito()
         })
     })
@@ -179,12 +179,12 @@ const accionBotones = () => {
 
 
             
-            const producto = carrito[btn.dataset.id]
+            const producto = compra[btn.dataset.id]
             producto.cantidad--
             if (producto.cantidad === 0) {
-                delete carrito[btn.dataset.id]
+                delete compra[btn.dataset.id]
             } else {
-                carrito[btn.dataset.id] = { ...producto }
+                compra[btn.dataset.id] = { ...producto }
             }
             completarCarrito()
         })
