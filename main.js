@@ -8,7 +8,7 @@ if (localStorage.getItem('carrito')){
 
 
 })
-
+//tomo el JSON
 const cargarBaseDatos = async () => {
     try {
         const res = await fetch('baseDatos.json')
@@ -25,9 +25,9 @@ const contendorProductos = document.querySelector('#contenedor-productos')
 const pintarProductos = (data) => {
     const template = document.querySelector('#template-productos').content
     const fragment = document.createDocumentFragment()
-    // console.log(template)
+ 
     data.forEach(producto => {
-        // console.log(producto)
+      
         template.querySelector('img').setAttribute('src', producto.thumbnailUrl)
         template.querySelector('h5').textContent = producto.title
         template.querySelector('p span').textContent = producto.precio
@@ -42,17 +42,18 @@ let carrito = {}
 
 const detectarBotones = (data) => {
     const botones = document.querySelectorAll('.card button')
-
+//deberia sumar item al clickear
     botones.forEach(btn => {
         btn.addEventListener('click', () => {
-            // console.log(btn.dataset.id)
+          
             const producto = data.find(item => item.id === parseInt(btn.dataset.id))
             producto.cantidad = 1
+
             if (carrito.hasOwnProperty(producto.id)) {
                 producto.cantidad = carrito[producto.id].cantidad + 1
             }
             carrito[producto.id] = { ...producto }
-            // console.log('carrito', carrito)
+          
             pintarCarrito()
         })
     })
@@ -62,14 +63,14 @@ const items = document.querySelector('#items')
 
 const pintarCarrito = () => {
 
-    //pendiente innerHTML
+  
     items.innerHTML = ''
 
     const template = document.querySelector('#template-carrito').content
     const fragment = document.createDocumentFragment()
 
     Object.values(carrito).forEach(producto => {
-        // console.log('producto', producto)
+       
         template.querySelector('th').textContent = producto.id
         template.querySelectorAll('td')[0].textContent = producto.title
         template.querySelectorAll('td')[1].textContent = producto.cantidad
@@ -99,7 +100,7 @@ const pintarFooter = () => {
 
     if (Object.keys(carrito).length === 0) {
         footer.innerHTML = `
-        <th scope="row" colspan="5">Carrito vacío con innerHTML</th>
+        <th scope="row" colspan="5"> Carrito de compra limpio</th>
         `
         return
     }
@@ -110,7 +111,7 @@ const pintarFooter = () => {
     // sumar cantidad y sumar totales
     const nCantidad = Object.values(carrito).reduce((acc, { cantidad }) => acc + cantidad, 0)
     const nPrecio = Object.values(carrito).reduce((acc, {cantidad, precio}) => acc + cantidad * precio ,0)
-    // console.log(nPrecio)
+
 
     template.querySelectorAll('td')[0].textContent = nCantidad
     template.querySelector('span').textContent = nPrecio
@@ -133,11 +134,11 @@ const accionBotones = () => {
     const botonesAgregar = document.querySelectorAll('#items .btn-info')
     const botonesEliminar = document.querySelectorAll('#items .btn-danger')
 
-    // console.log(botonesAgregar)
+ 
 
     botonesAgregar.forEach(btn => {
         btn.addEventListener('click', () => {
-            // console.log(btn.dataset.id)
+          
             Swal.fire({
                 position: 'top-middle',
                 icon: 'success',
@@ -156,7 +157,7 @@ const accionBotones = () => {
 
     botonesEliminar.forEach(btn => {
         btn.addEventListener('click', () => {
-            // console.log('eliminando...')
+           
 
             Swal.fire({
                 title: 'Segura?',
