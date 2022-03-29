@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarBaseDatos() //creo una funcion para cargar 
 if (localStorage.getItem('carrito')){
     carrito = JSON.parse(localStorage.getItem('carrito'))
-    pintarCarrito()
+    completarCarrito()
 }
 
 
@@ -14,7 +14,7 @@ const cargarBaseDatos = async () => {
         const res = await fetch('baseDatos.json')
         const data = await res.json()
         console.log(data)
-        pintarProductos(data)
+        completarProductos(data)
         detectarBotones(data)
     } catch (error) {
         console.log(error)
@@ -22,7 +22,7 @@ const cargarBaseDatos = async () => {
 }
 
 const contendorProductos = document.querySelector('#contenedor-productos')
-const pintarProductos = (data) => {
+const completarProductos = (data) => {
     const template = document.querySelector('#template-productos').content
     const fragment = document.createDocumentFragment()
  
@@ -54,14 +54,14 @@ const detectarBotones = (data) => {
             }
             carrito[producto.id] = { ...producto }
           
-            pintarCarrito()
+            completarCarrito()
         })
     })
 }
 
 const items = document.querySelector('#items')
 
-const pintarCarrito = () => {
+const completarCarrito = () => {
 
   
     items.innerHTML = ''
@@ -125,7 +125,7 @@ const pintarFooter = () => {
     const boton = document.querySelector('#vaciar-carrito')
     boton.addEventListener('click', () => {
         carrito = {}
-        pintarCarrito()
+        completarCarrito()
     })
 
 }
@@ -151,7 +151,7 @@ const accionBotones = () => {
             const producto = carrito[btn.dataset.id]
             producto.cantidad ++
             carrito[btn.dataset.id] = { ...producto }
-            pintarCarrito()
+            completarCarrito()
         })
     })
 
@@ -186,7 +186,7 @@ const accionBotones = () => {
             } else {
                 carrito[btn.dataset.id] = { ...producto }
             }
-            pintarCarrito()
+            completarCarrito()
         })
     })
 }
