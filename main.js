@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     cargarBaseDatos() //creo una funcion para cargar 
-if (localStorage.getItem('compra')){
-    compra = JSON.parse(localStorage.getItem('compra'))
-    completarInfoCompra()
+if (localStorage.getItem('carrito')){
+    carrito = JSON.parse(localStorage.getItem('carrito'))
+    pintarCarrito()
 }
 
 
@@ -11,10 +11,10 @@ if (localStorage.getItem('compra')){
 
 const cargarBaseDatos = async () => {
     try {
-        const res = await fetch('baseDatos.json')
+        const res = await fetch('api.json')
         const data = await res.json()
         console.log(data)
-        completarProductos(data)
+        pintarProductos(data)
         detectarBotones(data)
     } catch (error) {
         console.log(error)
@@ -22,8 +22,8 @@ const cargarBaseDatos = async () => {
 }
 
 const contendorProductos = document.querySelector('#contenedor-productos')
-const completarProductos = (data) => {
-    const template = document.querySelector('#productosElegidos').content
+const pintarProductos = (data) => {
+    const template = document.querySelector('#template-productos').content
     const fragment = document.createDocumentFragment()
     // console.log(template)
     data.forEach(producto => {
@@ -38,7 +38,7 @@ const completarProductos = (data) => {
     contendorProductos.appendChild(fragment)
 }
 
-let compra = {}
+let carrito = {}
 
 const detectarBotones = (data) => {
     const botones = document.querySelectorAll('.card button')
@@ -48,27 +48,27 @@ const detectarBotones = (data) => {
             // console.log(btn.dataset.id)
             const producto = data.find(item => item.id === parseInt(btn.dataset.id))
             producto.cantidad = 1
-            if (compra.hasOwnProperty(producto.id)) {
-                producto.cantidad = compra[producto.id].cantidad + 1
+            if (carrito.hasOwnProperty(producto.id)) {
+                producto.cantidad = carrito[producto.id].cantidad + 1
             }
-            compra[producto.id] = { ...producto }
-            // console.log('compra', compra)
-            completarInfoCompra()
+            carrito[producto.id] = { ...producto }
+            // console.log('carrito', carrito)
+            pintarCarrito()
         })
     })
 }
 
 const items = document.querySelector('#items')
 
-const completarInfoCompra = () => {
+const pintarCarrito = () => {
 
     //pendiente innerHTML
     items.innerHTML = ''
 
-    const template = document.querySelector('# listaCompra').content
+    const template = document.querySelector('#template-carrito').content
     const fragment = document.createDocumentFragment()
 
-    Object.values(compra).forEach(producto => {
+    Object.values(carrito).forEach(producto => {
         // console.log('producto', producto)
         template.querySelector('th').textContent = producto.id
         template.querySelectorAll('td')[0].textContent = producto.title
@@ -85,31 +85,31 @@ const completarInfoCompra = () => {
 
     items.appendChild(fragment)
 
-    completarFooter()
+    pintarFooter()
     accionBotones()
 
-    localStorage.setItem('compra', JSON.stringify(compra))
+    localStorage.setItem('carrito', JSON.stringify(carrito))
 
 }
 
-const footer = document.querySelector('#tabla-footer')
-const completarFooter = () => {
+const footer = document.querySelector('#footer-carrito')
+const pintarFooter = () => {
 
     footer.innerHTML = ''
 
-    if (Object.keys(compra).length === 0) {
+    if (Object.keys(carrito).length === 0) {
         footer.innerHTML = `
-        <th scope="row" colspan="5"> Vaciamos la lista</th>
+        <th scope="row" colspan="5">Carrito vacío con innerHTML</th>
         `
         return
     }
 
-    const template = document.querySelector('#estructura-footer').content
+    const template = document.querySelector('#template-footer').content
     const fragment = document.createDocumentFragment()
 
     // sumar cantidad y sumar totales
-    const nCantidad = Object.values(compra).reduce((acumulador, { cantidad }) => acumulador + cantidad, 0)
-    const nPrecio = Object.values(compra).reduce((acumulador, {cantidad, precio}) => acumulador + cantidad * precio ,0)
+    const nCantidad = Object.values(carrito).reduce((acc, { cantidad }) => acc + cantidad, 0)
+    const nPrecio = Object.values(carrito).reduce((acc, {cantidad, precio}) => acc + cantidad * precio ,0)
     // console.log(nPrecio)
 
     template.querySelectorAll('td')[0].textContent = nCantidad
@@ -121,10 +121,10 @@ const completarFooter = () => {
     footer.appendChild(fragment)
 
 
-    const boton = document.querySelector('#vaciar')
+    const boton = document.querySelector('#vaciar-carrito')
     boton.addEventListener('click', () => {
-        compra = {}
-        completarInfoCompra()
+        carrito = {}
+        pintarCarrito()
     })
 
 }
@@ -141,16 +141,16 @@ const accionBotones = () => {
             Swal.fire({
                 position: 'top-middle',
                 icon: 'success',
-                title: 'Gracias por comprar',
+                title: 'Agregaste un item!!!',
                 showConfirmButton: false,
                 timer: 1500
               })
 
 
-            const producto = compra[btn.dataset.id]
+            const producto = carrito[btn.dataset.id]
             producto.cantidad ++
-            compra[btn.dataset.id] = { ...producto }
-            completarInfoCompra()
+            carrito[btn.dataset.id] = { ...producto }
+            pintarCarrito()
         })
     })
 
@@ -159,18 +159,18 @@ const accionBotones = () => {
             // console.log('eliminando...')
 
             Swal.fire({
-                title: 'Estas seguro?',
-                text: "Podrias perder tu info",
+                title: 'Segura?',
+                text: "Vamos a borrar un item!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Si eliminar!'
+                confirmButtonText: 'Si!'
               }).then((result) => {
                 if (result.isConfirmed) {
                   Swal.fire(
                     'Borrado!',
-                    'Este item fue eliminado.',
+                    'Tu item fue eliminado.',
                     'success'
                   )
                 }
@@ -178,55 +178,14 @@ const accionBotones = () => {
 
 
             
-            const producto = compra[btn.dataset.id]
+            const producto = carrito[btn.dataset.id]
             producto.cantidad--
             if (producto.cantidad === 0) {
-                delete compra[btn.dataset.id]
+                delete carrito[btn.dataset.id]
             } else {
-                compra[btn.dataset.id] = { ...producto }
+                carrito[btn.dataset.id] = { ...producto }
             }
-            completarInfoCompra()
+            pintarCarrito()
         })
     })
 }
-
-/* SWEETALERT
-botonesAgregar.addEventListener('click', () => {
-    Swal.fire({
-        position: 'top-middle',
-        icon: 'success',
-        title: 'Your work has been saved',
-        showConfirmButton: false,
-        timer: 1500
-      })
-})
-
-botonesEliminar.addEventListener('click', () => {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire(
-            'Deleted!',
-            'Your file has been deleted.',
-            'success'
-          )
-        }
-      })
-}) */
-
-// let carritoEjemplo = {}
-// carritoEjemplo = {
-//     1: {id: 1, titulo: 'cafe', precio: 500, cantidad: 3},
-//     2: {id: 3, titulo: 'pizza', precio: 100, cantidad: 2},
-// }
-
-// console.log(carritoEjemplo[1])
-
-//LOCAL STORAGE
